@@ -152,6 +152,20 @@ class FilmorateApplicationTests {
     }
 
     @Test
+    @DisplayName("Сегодняшняя дата рождения допустима — граничное значение")
+    void todayBirthdayIsValid() {
+        User user = validUser().toBuilder().birthday(LocalDate.now()).build();
+        assertTrue(validator.validate(user).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Завтрашняя дата рождения отклоняется")
+    void tomorrowBirthdayIsRejected() {
+        User user = validUser().toBuilder().birthday(LocalDate.now().plusDays(1)).build();
+        assertSingleViolation(validator.validate(user), "birthday");
+    }
+
+    @Test
     @DisplayName("Дата рождения в будущем отклоняется")
     void futureBirthdayIsRejected() {
         User user = validUser().toBuilder().birthday(LocalDate.of(2446, 8, 20)).build();

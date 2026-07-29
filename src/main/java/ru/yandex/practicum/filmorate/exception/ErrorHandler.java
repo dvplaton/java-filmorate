@@ -37,9 +37,9 @@ public class ErrorHandler {
         return new ErrorResponse("Объект не найден", e.getMessage());
     }
 
-    @ExceptionHandler(Throwable.class)
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleThrowable(Throwable e) {
+    public ErrorResponse handleException(Exception e) {
         log.error("Внутренняя ошибка сервера", e);
         return new ErrorResponse("Внутренняя ошибка сервера", e.getMessage());
     }
