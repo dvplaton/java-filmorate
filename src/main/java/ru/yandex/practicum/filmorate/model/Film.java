@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Film.
@@ -37,4 +40,14 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private Integer duration;
 
+    /** Рейтинг MPA (возрастное ограничение). */
+    private Mpa mpa;
+
+    /** Жанры фильма (может быть несколько). */
+    @Builder.Default
+    private Set<Genre> genres = new LinkedHashSet<>();
+
+    /** Идентификаторы пользователей, поставивших лайк. */
+    @Builder.Default
+    private Set<Long> likes = new HashSet<>();
 }
