@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -102,5 +103,21 @@ class UserDbStorageTest {
         userStorage.removeFriend(u1.getId(), u2.getId());
         found = userStorage.findById(u1.getId());
         assertThat(found.get().getFriends()).doesNotContain(u2.getId());
+    }
+
+    @Test
+    void testGetFriendIds() {
+        User u1 = userStorage.create(User.builder()
+                .email("u1@t.com").login("u1").name("U1")
+                .birthday(LocalDate.of(1990, 1, 1)).build());
+        User u2 = userStorage.create(User.builder()
+                .email("u2@t.com").login("u2").name("U2")
+                .birthday(LocalDate.of(1991, 1, 1)).build());
+
+        userStorage.addFriend(u1.getId(), u2.getId());
+
+        Set<Long> friendIds = userStorage.getFriendIds(u1.getId());
+        assertThat(friendIds).contains(u2.getId());
+        assertThat(userStorage.getFriendIds(u2.getId())).isEmpty();
     }
 }

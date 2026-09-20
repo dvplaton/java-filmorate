@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -123,5 +124,18 @@ class FilmDbStorageTest {
                 .duration(80).mpa(Mpa.builder().id(1).build()).build());
         assertThat(filmStorage.existsById(created.getId())).isTrue();
         assertThat(filmStorage.existsById(99999L)).isFalse();
+    }
+
+    @Test
+    void testFindAll() {
+        filmStorage.create(Film.builder()
+                .name("Film 1").description("d").releaseDate(LocalDate.of(2000, 1, 1))
+                .duration(100).mpa(Mpa.builder().id(1).build()).build());
+        filmStorage.create(Film.builder()
+                .name("Film 2").description("d").releaseDate(LocalDate.of(2001, 1, 1))
+                .duration(90).mpa(Mpa.builder().id(1).build()).build());
+
+        Collection<Film> films = filmStorage.findAll();
+        assertThat(films).hasSizeGreaterThanOrEqualTo(2);
     }
 }

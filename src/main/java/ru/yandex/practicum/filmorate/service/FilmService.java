@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
@@ -18,7 +17,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,13 +61,7 @@ public class FilmService {
         getByIdOrThrow(filmId);
         ensureUserExists(userId);
 
-        if (filmStorage instanceof FilmDbStorage dbStorage) {
-            dbStorage.addLike(filmId, userId);
-        } else {
-            Film film = getByIdOrThrow(filmId);
-            film.getLikes().add(userId);
-            filmStorage.update(film);
-        }
+        filmStorage.addLike(filmId, userId);
         log.info("Пользователь {} поставил лайк фильму {}", userId, filmId);
     }
 
@@ -77,13 +69,7 @@ public class FilmService {
         getByIdOrThrow(filmId);
         ensureUserExists(userId);
 
-        if (filmStorage instanceof FilmDbStorage dbStorage) {
-            dbStorage.removeLike(filmId, userId);
-        } else {
-            Film film = getByIdOrThrow(filmId);
-            film.getLikes().remove(userId);
-            filmStorage.update(film);
-        }
+        filmStorage.removeLike(filmId, userId);
         log.info("Пользователь {} удалил лайк с фильма {}", userId, filmId);
     }
 
@@ -91,13 +77,7 @@ public class FilmService {
         if (count <= 0) {
             throw new ValidationException("Параметр count должен быть положительным числом");
         }
-        if (filmStorage instanceof FilmDbStorage dbStorage) {
-            return dbStorage.findPopular(count);
-        }
-        return filmStorage.findAll().stream()
-                .sorted((a, b) -> Integer.compare(b.getLikes().size(), a.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.findPopular(count);
     }
 
     private void validateAndEnrich(Film film) {

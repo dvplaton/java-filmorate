@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -58,13 +57,7 @@ public class UserService {
         getByIdOrThrow(userId);
         getByIdOrThrow(friendId);
 
-        if (userStorage instanceof UserDbStorage dbStorage) {
-            dbStorage.addFriend(userId, friendId);
-        } else {
-            User user = getByIdOrThrow(userId);
-            user.getFriends().add(friendId);
-            userStorage.update(user);
-        }
+        userStorage.addFriend(userId, friendId);
         log.info("Пользователь {} добавил в друзья пользователя {}", userId, friendId);
     }
 
@@ -72,13 +65,7 @@ public class UserService {
         getByIdOrThrow(userId);
         getByIdOrThrow(friendId);
 
-        if (userStorage instanceof UserDbStorage dbStorage) {
-            dbStorage.removeFriend(userId, friendId);
-        } else {
-            User user = getByIdOrThrow(userId);
-            user.getFriends().remove(friendId);
-            userStorage.update(user);
-        }
+        userStorage.removeFriend(userId, friendId);
         log.info("Пользователь {} удалил из друзей пользователя {}", userId, friendId);
     }
 

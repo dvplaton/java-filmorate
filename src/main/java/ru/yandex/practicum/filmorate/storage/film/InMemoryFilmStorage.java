@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -48,5 +49,29 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private long generateId() {
         return ++lastId;
+    }
+
+    @Override
+    public void addLike(Long filmId, Long userId) {
+        Film film = films.get(filmId);
+        if (film != null) {
+            film.getLikes().add(userId);
+        }
+    }
+
+    @Override
+    public void removeLike(Long filmId, Long userId) {
+        Film film = films.get(filmId);
+        if (film != null) {
+            film.getLikes().remove(userId);
+        }
+    }
+
+    @Override
+    public Collection<Film> findPopular(int count) {
+        return films.values().stream()
+                .sorted((a, b) -> Integer.compare(b.getLikes().size(), a.getLikes().size()))
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }
