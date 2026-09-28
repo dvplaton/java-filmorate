@@ -40,10 +40,6 @@ public class UserService {
         }
         User existing = getByIdOrThrow(user.getId());
         fillNameIfBlank(user);
-        // сохраняем существующих друзей, если клиент их не прислал
-        if (user.getFriends() == null) {
-            user.setFriends(existing.getFriends() != null ? existing.getFriends() : new HashSet<>());
-        }
         User updated = userStorage.update(user);
         log.info("Обновлён пользователь: {} -> {}", existing, updated);
         return updated;
@@ -53,31 +49,24 @@ public class UserService {
         return getByIdOrThrow(id);
     }
 
+    /** Односторонняя дружба */
     public void addFriend(Long userId, Long friendId) {
         if (userId.equals(friendId)) {
             throw new ValidationException("Нельзя добавить себя в друзья");
         }
-        User user = getByIdOrThrow(userId);
-        User friend = getByIdOrThrow(friendId);
+        getByIdOrThrow(userId);
+        getByIdOrThrow(friendId);
 
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
-
-        userStorage.update(user);
-        userStorage.update(friend);
-        log.info("Пользователи {} и {} теперь друзья", userId, friendId);
+        userStorage.addFriend(userId, friendId);
+        log.info("Пользователь {} добавил в друзья пользователя {}", userId, friendId);
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        User user = getByIdOrThrow(userId);
-        User friend = getByIdOrThrow(friendId);
+        getByIdOrThrow(userId);
+        getByIdOrThrow(friendId);
 
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
-
-        userStorage.update(user);
-        userStorage.update(friend);
-        log.info("Пользователи {} и {} больше не друзья", userId, friendId);
+        userStorage.removeFriend(userId, friendId);
+        log.info("Пользователь {} удалил из друзей пользователя {}", userId, friendId);
     }
 
     public Collection<User> getFriends(Long userId) {

@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -48,5 +45,27 @@ public class InMemoryUserStorage implements UserStorage {
 
     private long generateId() {
         return ++lastId;
+    }
+
+    @Override
+    public void addFriend(Long userId, Long friendId) {
+        User user = users.get(userId);
+        if (user != null) {
+            user.getFriends().add(friendId);
+        }
+    }
+
+    @Override
+    public void removeFriend(Long userId, Long friendId) {
+        User user = users.get(userId);
+        if (user != null) {
+            user.getFriends().remove(friendId);
+        }
+    }
+
+    @Override
+    public Set<Long> getFriendIds(Long userId) {
+        User user = users.get(userId);
+        return user != null ? new HashSet<>(user.getFriends()) : new HashSet<>();
     }
 }
